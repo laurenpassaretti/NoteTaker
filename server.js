@@ -19,13 +19,14 @@ app.use(express.static('public'));
 //html route to return the notes file
 app.get("/notes", function (req, res) {
     res.sendFile(path.join(__dirname, "./public/notes.html"));
+   
 });
 //route to display test in the db.json file
 app.get("/api/notes", (req, res) => {
     jsonFile = fs.readFileSync("db/db.json", "utf-8", (err) => {
         if (err) throw err
     })
-    res.json(jsonFile);
+   return res.json(jsonFile);
 }); 
 //html route to return to index.html
 app.get("*", function (req, res) {
@@ -37,8 +38,8 @@ app.post("/api/notes", function (req, res) {
     jsonFile= fs.readFileSync("db/db.json", "utf-8")
     jsonFile = JSON.parse(jsonFile); 
     req.body.id = jsonFile.length; 
-    var newNote = req.body;
-    jsonFile.push(newNote)
+    var newNoteItem = req.body;
+    jsonFile.push(newNoteItem)
     jsonFile = JSON.stringify(jsonFile); 
     fs.writeFileSync('db/db.json', jsonFile, (req, res) => {
         console.log("successfully created new note")
@@ -46,6 +47,7 @@ app.post("/api/notes", function (req, res) {
         res.json(jsonFile)
 
     })
+    return res.json(jsonFile)
 });
 app.delete("/api/notes/:id", function(req,res){
     let noteID = req.params.id;
