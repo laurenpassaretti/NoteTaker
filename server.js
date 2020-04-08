@@ -39,29 +39,36 @@ app.get("/", function (req, res) {
 
 
 app.post("/api/notes", function (req, res) {
-    jsonFile= fs.readFile("db/db.json", "utf-8", (err,data) => {
-        jsonFile = JSON.parse(jsonFile); 
-        req.body.id = jsonFile.length; 
+    fs.readFile("db/db.json", "utf-8", (err,data) => {
+        jsonFile = JSON.parse(data); 
         var newNoteItem = req.body;
+        newNoteItem.id = jsonFile.length; 
         jsonFile.push(newNoteItem)
         jsonFile = JSON.stringify(jsonFile); 
-        fs.writeFile('db/db.json', jsonFile, (req, res) => {
+        fs.writeFile('db/db.json', jsonFile, (err, data) => {
             console.log("successfully created new note")
             if (err) throw err; 
             res.json(jsonFile) 
-    })
+    });
 
-    })
+    });
    
 });
 app.delete("/api/notes/:id", function(req,res){
-    let noteID = req.params.id;
+    const notesId = parseInt(req.params.id);
+    console.log(notesId)
+   fs.readFile("db/db.json", "utf-8", (err,data) => {
+    jsonFile = JSON.parse(data); 
+    const newArray = jsonFile.filter(item => {
+        return item.id !== notesId
+    }); console.log(newArray)
+    fs.writeFile('db/db.json', JSON.stringify(newArray), (err, data) => {
+        console.log("successfully deleted item")
+        if (err) throw err; 
+        res.json(newArray) 
+});
+   }); 
    
-    for(var i = 0; i < notes.length; i++){
-        if(noteID === notes[i].id){
-            delete notes[i];
-        }
-    }
 }); 
 
 
