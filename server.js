@@ -23,31 +23,36 @@ app.get("/notes", function (req, res) {
 });
 //route to display test in the db.json file
 app.get("/api/notes", (req, res) => {
-    jsonFile = fs.readFileSync("db/db.json", "utf-8", (err) => {
-        if (err) throw err
-    })
-   return res.json(jsonFile);
+    console.log("hit get")
+    fs.readFile("./db/db.json", "utf-8", (err,data) => {
+        if (err) throw err;
+        console.log(data)
+        res.json(JSON.parse(data));
+        
+    });
+  
 }); 
 //html route to return to index.html
-app.get("*", function (req, res) {
+app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname, "./public/index.html"));
 })
 
 
 app.post("/api/notes", function (req, res) {
-    jsonFile= fs.readFileSync("db/db.json", "utf-8")
-    jsonFile = JSON.parse(jsonFile); 
-    req.body.id = jsonFile.length; 
-    var newNoteItem = req.body;
-    jsonFile.push(newNoteItem)
-    jsonFile = JSON.stringify(jsonFile); 
-    fs.writeFileSync('db/db.json', jsonFile, (req, res) => {
-        console.log("successfully created new note")
-        if (err) throw err; 
-        res.json(jsonFile)
+    jsonFile= fs.readFile("db/db.json", "utf-8", (err,data) => {
+        jsonFile = JSON.parse(jsonFile); 
+        req.body.id = jsonFile.length; 
+        var newNoteItem = req.body;
+        jsonFile.push(newNoteItem)
+        jsonFile = JSON.stringify(jsonFile); 
+        fs.writeFile('db/db.json', jsonFile, (req, res) => {
+            console.log("successfully created new note")
+            if (err) throw err; 
+            res.json(jsonFile) 
+    })
 
     })
-    return res.json(jsonFile)
+   
 });
 app.delete("/api/notes/:id", function(req,res){
     let noteID = req.params.id;
